@@ -12,7 +12,7 @@ The application is built using **Streamlit** and powered by a **Deep Learning mo
 
 ## 🚀 Live Demo
 
-*(Add your Streamlit Cloud link here after deployment)*
+https://sentimentanalysisapp-sb4c9wnguref62nbujvfyh.streamlit.app/
 
 ---
 
