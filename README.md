@@ -103,10 +103,10 @@ Tweets.csv
 ## 🛠️ How to Run Locally
 
 1. Clone the repository:
-   git clone \<your-repo-link\>
+   git clone <https://github.com/sheema-sul/sentiment_analysis_app.git>
 
 2. Navigate to project folder:
-   cd \<your-folder\>
+   cd <sentiment_analysis_app>
 
 3. Install dependencies:
    pip install -r requirements.txt
