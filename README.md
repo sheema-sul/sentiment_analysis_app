@@ -14,7 +14,9 @@ The application is built using **Streamlit** and powered by a **Deep Learning mo
 
 👉 [Click here to use the app](https://sentimentanalysisapp-sb4c9wnguref62nbujvfyh.streamlit.app/)
 
-📱 Mobile Users: If the app shows a blank screen, open the link in Chrome or Safari.
+📱 **Mobile Users:** If the app shows a blank screen, open the link in Chrome or Safari.
+
+💡 **Tip:** Try inputs like "flight delay", "excellent service", or "bad experience" for better results.
 
 ---
 
@@ -39,7 +41,7 @@ Below is the Streamlit interface of the application:
 ## ⚙️ Technologies Used
 
 * Python
-* TensorFlow / Keras
+* TensorFlow (Keras)
 * NLTK
 * Pandas
 * Scikit-learn
@@ -81,6 +83,15 @@ Tweets.csv
 
 ---
 
+## ⚠️ Limitations
+
+* This model is trained on a limited dataset (airline tweets).
+* It may not perform well on general or unrelated sentences.
+* Predictions depend on similarity between input text and training data.
+* Some neutral or slightly positive/negative sentences may be misclassified.
+
+---
+
 ## 🛠️ How to Run Locally
 
 1. Clone the repository:
@@ -99,17 +110,17 @@ Tweets.csv
 
 ## 💡 Example
 
-Input:
-"The airline service was excellent!"
+Input:  
+"Flight delay"
 
-Output:
-Positive 😊
+Output:  
+Negative 😠
 
 ---
 
 ## 👩‍💻 Author
 
-**Sheema Sultana**.
+**Sheema Sultana**
 Aspiring Data Scientist | NLP Enthusiast
 
 ---
