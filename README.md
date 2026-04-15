@@ -112,7 +112,7 @@ Tweets.csv
    pip install -r requirements.txt
 
 4. Run the app:
-   streamlit run page.py
+   streamlit run app.py
 
 ---
 
