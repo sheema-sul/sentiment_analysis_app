@@ -63,12 +63,20 @@ Tweets.csv
 
 ## 📂 Project Structure
 
-- **page.py** → Streamlit UI (main app)  
-- **test.py** → Prediction logic  
-- **model.h5** → Trained deep learning model  
-- **tokenizer.pkl** → Tokenizer for text processing  
-- **requirements.txt** → Dependencies  
-- **README.md** → Project documentation  
+### Core Files
+
+* **app.py** → Streamlit UI (main application)
+* **predict.py** → Handles prediction logic
+* **model.h5** → Trained deep learning model
+* **tokenizer.pkl** → Text preprocessing tokenizer
+
+### Supporting Files
+
+* **train_model.py** → Model training script
+* **requirements.txt** → Project dependencies
+* **runtime.txt** → Specifies Python version for deployment
+* **app_preview.png** → Screenshot of the application interface
+* **README.md** → Project documentation
 
 ---
 
@@ -95,10 +103,10 @@ Tweets.csv
 ## 🛠️ How to Run Locally
 
 1. Clone the repository:
-   git clone <your-repo-link>
+   git clone \<your-repo-link\>
 
 2. Navigate to project folder:
-   cd <your-folder>
+   cd \<your-folder\>
 
 3. Install dependencies:
    pip install -r requirements.txt
