@@ -1,106 +1,100 @@
-import pandas as pd
-data=pd.read_csv("Tweets.csv")
-data.head()
+import streamlit as st
+from tensorflow.keras.models import load_model
+from tensorflow.keras.preprocessing.sequence import pad_sequences
+import pickle as pkl
+import nltk
+from nltk.corpus import stopwords
 
-import nltk # NLP
-from nltk.corpus import stopwords # stopwords 
-from tensorflow.keras.preprocessing.text import Tokenizer 
-from tensorflow.keras.preprocessing.sequence import pad_sequences 
+# Download stopwords quietly
+nltk.download('stopwords', quiet=True)
 
-# Download stopwords
-nltk.download('stopwords')
+# Page config
+st.set_page_config(page_title="Sentiment Analyzer", page_icon="✈️")
 
-stop_words = set(stopwords.words('english')) # get stopwords
-
-# preprocessing function
-def preprocess_text(text): 
-    text = text.lower()   # Converts text to lowercase
-    text = ' '.join([word for word in text.split() if word not in stop_words]) 
+# Preprocessing function (same as training)
+def preprocess_text(text):
+    text = text.lower()
+    stop_words = set(stopwords.words('english'))
+    text = ' '.join([word for word in text.split() if word not in stop_words])
     return text
 
-# Apply preprocessing to the text column
-data['text'] = data['text'].apply(preprocess_text)
+@st.cache_resource
+def load_model_and_tokenizer():
+    model = load_model("model.h5")
+    with open("tokenizer.pkl", "rb") as f:
+        tokenizer = pkl.load(f)
+    return model, tokenizer
 
-data["text"]
+model, tokenizer = load_model_and_tokenizer()
 
-# Tokenization and padding 
-tokenizer = Tokenizer(num_words=10000, oov_token="<OOV>")
-tokenizer.fit_on_texts(data['text'])
-sequences = tokenizer.texts_to_sequences(data['text'])
-# sequences
-
-padded_sequences = pad_sequences(sequences, maxlen=200, padding='post', truncating='post')
-padded_sequences
-
-data["airline_sentiment"].value_counts()
-
-# Extract labels
-labels = pd.get_dummies(data['airline_sentiment']).values
-labels #pos,neg,neutral
-
-# training the model
-
-import tensorflow as tf
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Embedding, LSTM, Dense, Dropout, Bidirectional
-
-# Building the RNN model
-model = Sequential([
-    Embedding(input_dim=10000, output_dim=128, input_length=200),
-    Bidirectional(LSTM(64, return_sequences=True)),
-    Dropout(0.5),
-    Bidirectional(LSTM(32)),
-    Dense(32, activation='relu'),
-    Dropout(0.5),
-    Dense(3, activation='softmax')
-])
-
-model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-
-# Split data into training and testing sets
-from sklearn.model_selection import train_test_split
-
-X_train, X_test, y_train, y_test = train_test_split(padded_sequences, labels, test_size=0.2, random_state=42)
-
-# Train the model
-num_epochs = 2
-history = model.fit(X_train, y_train, epochs=num_epochs, validation_data=(X_test, y_test), batch_size=32)
-
-# Evaluate the model on the test set
-test_loss, test_acc = model.evaluate(X_test, y_test)
-print(f"Test Accuracy: {test_acc:.2f}")
-
-# Function to preprocess and predict sentiment
-def predict_sentiment(text, tokenizer, model):
-    # Preprocess the text (tokenization and padding)
+# Prediction function
+def predict_sentiment(text):
     text = preprocess_text(text)
     sequence = tokenizer.texts_to_sequences([text])
-    padded_sequence = pad_sequences(sequence, maxlen=200, padding='post', truncating='post')
-    print(f"The padded seq is {padded_sequence}")
+    padded = pad_sequences(sequence, maxlen=200, padding='post', truncating='post')
+    prediction = model.predict(padded)
+    labels = ['negative', 'neutral', 'positive']
+    return labels[prediction.argmax()]
 
-    # Make a prediction
-    prediction = model.predict(padded_sequence)
-    print(f"The prediction is {prediction}")
 
-    # Get the sentiment with the highest probability
-    sentiment_index = prediction.argmax(axis=1)[0]
-    print(f" The sentiment index is {sentiment_index}")
+# UI
+st.markdown("""
+<style>
 
-    # Map index to sentiment label
-    sentiment_labels = ['negative', 'neutral', 'positive']
-    sentiment = sentiment_labels[sentiment_index]
+/* background */
+[data-testid="stAppViewContainer"] {
+    background-color: #000000;
+}
 
-    return sentiment
+/* Main text color */
+h1, h2, h3, p, label {
+    color: white !important;
+}
 
-# Example usage
-new_text = "I'm really happy with the service provided by the airline!"
-predicted_sentiment = predict_sentiment(new_text, tokenizer, model)
-print(f"The predicted sentiment is: {predicted_sentiment}")
+/* Input box */
+textarea {
+    background-color: #1e1e1e !important;
+    color: white !important;
+    border-radius: 10px !important;
+    border: 1px solid #555 !important;
+}
 
-# Save model
-model.save("model.h5")
+/* Button */
+button {
+    background-color: #4CAF50 !important;
+    color: white !important;
+    border-radius: 10px !important;
+}
 
-#save tokenizer
-import pickle as pkl
-with open("tokenizer.pkl", "wb") as f:
-    pkl.dump(tokenizer, f)
+</style>
+""", unsafe_allow_html=True)
+
+# Title/description
+st.title("✈️ Airline Sentiment Analyzer")
+st.markdown("---")
+st.markdown(
+    "<p style='text-align: right; color: gray;'>Built by Sheema</p>",
+    unsafe_allow_html=True
+)
+st.markdown("**Enter a sentence and check its sentiment.**")
+
+# Input box
+user_input = st.text_area("Type your sentence here:")
+
+# Button
+if st.button("Predict"):
+    
+    if user_input.strip() != "":
+        result = predict_sentiment(user_input)
+
+        if result == "positive":
+            st.success(f"Sentiment: 😊{result}")
+
+        elif result == "negative":
+            st.error(f"Sentiment: 😠{result}")
+
+        else:
+            st.warning(f"Sentiment: 😐{result}")
+
+    else:
+        st.warning("Please enter some text!")
